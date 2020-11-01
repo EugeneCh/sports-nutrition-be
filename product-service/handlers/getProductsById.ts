@@ -2,6 +2,7 @@ import { APIGatewayEventDefaultAuthorizerContext, APIGatewayProxyEventBase, APIG
 import 'source-map-support/register';
 import { Product } from '../models/Product';
 import { productsMock } from '../mocks/productList';
+import { setCorsHeaders } from '../helpers/helpers';
 
 export const getProductsById: APIGatewayProxyHandler = async (event: APIGatewayProxyEventBase<APIGatewayEventDefaultAuthorizerContext>) => {
     const { id }: { [name: string]: string; } = event.pathParameters;
@@ -9,17 +10,26 @@ export const getProductsById: APIGatewayProxyHandler = async (event: APIGatewayP
     try {
         products = await productsMock;
     } catch (error) {
-        console.log(error);
+        return {
+            statusCode: 500,
+            headers: setCorsHeaders(),
+            body: JSON.stringify(
+                error
+            )
+        };
     }
     const singleProduct: Product = products.find((product: Product) => product.id === id);
-    return {
+    return singleProduct ? {
         statusCode: 200,
-        headers: {
-            'Access-Control-Allow-Origin' : '*',
-            'Access-Control-Allow-Credentials' : true
-        },
+        headers: setCorsHeaders(),
         body: JSON.stringify(
             singleProduct
-        ),
+        )
+    } : {
+        statusCode: 404,
+        headers: setCorsHeaders(),
+        body: JSON.stringify(
+            `Product with ID ${id} not found`
+        )
     };
 }

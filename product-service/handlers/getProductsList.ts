@@ -1,20 +1,24 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { Product } from '../models/Product';
 import { productsMock } from '../mocks/productList';
+import { setCorsHeaders } from '../helpers/helpers';
 
 export const getProductsList: APIGatewayProxyHandler = async () => {
     let products: Product[];
     try {
         products = await productsMock;
     } catch (error) {
-        console.log(error);
+        return {
+            statusCode: 500,
+            headers: setCorsHeaders(),
+            body: JSON.stringify(
+                error
+            ),
+        };
     }
     return {
         statusCode: 200,
-        headers: {
-            'Access-Control-Allow-Origin' : '*',
-            'Access-Control-Allow-Credentials' : true
-        },
+        headers: setCorsHeaders(),
         body: JSON.stringify(
             products
         ),

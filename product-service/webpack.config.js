@@ -28,6 +28,8 @@ module.exports = {
         loader: 'ts-loader',
         exclude: [
           [
+            /\.test.tsx?$/,
+            /\.test.ts?$/,
             path.resolve(__dirname, 'node_modules'),
             path.resolve(__dirname, '.serverless'),
             path.resolve(__dirname, '.webpack'),

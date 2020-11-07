@@ -38,8 +38,7 @@ const serverlessConfiguration: Serverless = {
         {
           http: {
             method: 'get',
-            path: 'products-list',
-            cors: true
+            path: 'products-list'
           }
         }
       ]
@@ -50,8 +49,18 @@ const serverlessConfiguration: Serverless = {
         {
           http: {
             method: 'get',
-            path: 'product/{id}',
-            cors: true
+            path: 'product/{id}'
+          }
+        }
+      ]
+    },
+    addNewProduct: {
+      handler: 'handler.addNewProduct',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'products'
           }
         }
       ]

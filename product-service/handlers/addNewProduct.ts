@@ -23,9 +23,11 @@ export const addNewProduct: APIGatewayProxyHandler = async (event: APIGatewayPro
     try {
         const addProductQuery: string = 'insert into products (title, description, price) values ($1, $2, $3) returning id';
         const addStockQuery: string = 'insert into stocks (product_id, count) values ($1, $2)'
+        await client.query('BEGIN');
         const product: QueryResult<Product> = await client.query(addProductQuery, [title, description, price]);
         const productId: string = product.rows[0].id;
         await client.query(addStockQuery, [productId, count]);
+        await client.query('COMMIT')
         return {
             statusCode: 201,
             headers: setCorsHeaders(),
@@ -34,6 +36,7 @@ export const addNewProduct: APIGatewayProxyHandler = async (event: APIGatewayPro
             )
         }
     } catch (error) {
+        await client.query('ROLLBACK');
         return {
             statusCode: 500,
             headers: setCorsHeaders(),

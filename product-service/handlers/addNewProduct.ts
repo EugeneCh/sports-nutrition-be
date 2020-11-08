@@ -4,9 +4,19 @@ import { Client, QueryResult } from 'pg';
 import { Product } from '../models/Product';
 import { setCorsHeaders } from '../helpers/helpers';
 import { createDbClient } from '../helpers/db.helper';
+import { isProductBodyValid } from '../helpers/validator.helper';
 
 export const addNewProduct: APIGatewayProxyHandler = async (event: APIGatewayProxyEventBase<APIGatewayEventDefaultAuthorizerContext>) => {
     console.log(event, 'addNewProduct event');
+    if (!Boolean(event.body) && !isProductBodyValid(JSON.parse(event.body))) {
+        return {
+            statusCode: 400,
+            headers: setCorsHeaders(),
+            body: JSON.stringify(
+                'Body is invalid'
+            )
+        }
+    }
     const { title, count, description, price }: { [name: string]: string; } = JSON.parse(event.body);
     const client: Client = createDbClient();
     await client.connect();
@@ -34,5 +44,4 @@ export const addNewProduct: APIGatewayProxyHandler = async (event: APIGatewayPro
     } finally {
         await client.end();
     }
-
 }

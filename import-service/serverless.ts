@@ -22,21 +22,29 @@ const serverlessConfiguration: Serverless = {
     stage: 'dev',
     iamRoleStatements: [
       {
-        Effect: "Allow",
-        Action: ["s3:ListBucket"],
-        Resource: ["arn:aws:s3:::import-service-buck"],
+        Effect: 'Allow',
+        Action: ['s3:ListBucket'],
+        Resource: ['arn:aws:s3:::import-service-buck'],
       },
       {
-        Effect: "Allow",
-        Action: ["s3:*"],
-        Resource: ["arn:aws:s3:::import-service-buck/*"],
+        Effect: 'Allow',
+        Action: ['s3:*'],
+        Resource: ['arn:aws:s3:::import-service-buck/*'],
       },
+      {
+        Effect: 'Allow',
+        Action: ['sqs:*'],
+        Resource: ['${cf:product-service-${self:provider.stage}.ProductsCatalogQueueArn}']
+      }
     ],
     apiGateway: {
       minimumCompressionSize: 1024,
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PRODUCTS_CATALOG_QUEUE_URL: {
+        'Fn::ImportValue': 'ProductsCatalogQueue'
+      }
     },
   },
   functions: {

@@ -14,7 +14,6 @@ const serverlessConfiguration: Serverless = {
       includeModules: true
     }
   },
-  // Add the serverless-webpack plugin
   plugins: [
       'serverless-webpack',
       'serverless-dotenv-plugin'
@@ -29,7 +28,32 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      SQS_QUEUE_URL: {
+        'Ref': 'SQSQueue'
+      }
     },
+  },
+  resources: {
+    Resources: {
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'products-sqs-sns-queue'
+        }
+      }
+    },
+    Outputs: {
+      ProductsCatalogQueue: {
+        Value: {
+          'Ref': 'SQSQueue'
+        }
+      },
+      ProductsCatalogQueueArn: {
+        Value: {
+          'Fn::GetAtt': ['SQSQueue', 'Arn']
+        }
+      }
+    }
   },
   functions: {
     getProductsList: {
@@ -67,6 +91,20 @@ const serverlessConfiguration: Serverless = {
           }
         }
       ]
+    },
+    catalogBatchProcess: {
+      handler: 'handler.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn: {
+              'Fn::GetAtt': ['SQSQueue', 'Arn']
+            }
+          }
+        }
+      ]
+
     }
   }
 }

@@ -45,7 +45,7 @@ const serverlessConfiguration: Serverless = {
       PRODUCTS_CATALOG_QUEUE_URL: {
         'Fn::ImportValue': 'ProductsCatalogQueue'
       }
-    },
+    }
   },
   functions: {
     importProductsFile: {

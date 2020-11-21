@@ -46,12 +46,20 @@ const serverlessConfiguration: Serverless = {
       ProductsCatalogQueue: {
         Value: {
           'Ref': 'SQSQueue'
-        }
+        },
+        Export: {
+          Name: 'ProductsCatalogQueue'
+        },
+        Description: 'URL to products catalog SQS'
       },
       ProductsCatalogQueueArn: {
         Value: {
           'Fn::GetAtt': ['SQSQueue', 'Arn']
-        }
+        },
+        Export: {
+          Name: 'ProductsCatalogQueueArn'
+        },
+        Description: 'ARN for products catalog SQS'
       }
     }
   },

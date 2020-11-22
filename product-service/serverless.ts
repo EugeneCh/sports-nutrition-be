@@ -2,10 +2,7 @@ import type { Serverless } from 'serverless/aws';
 
 const serverlessConfiguration: Serverless = {
   service: {
-    name: 'product-service',
-    // app and org for use with dashboard.serverless.com
-    // app: your-app-name,
-    // org: your-org-name,
+    name: 'product-service'
   },
   frameworkVersion: '2',
   custom: {
@@ -28,10 +25,23 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      REGION_NAME: 'eu-west-1',
       SQS_QUEUE_URL: {
         'Ref': 'SQSQueue'
+      },
+      SNS_TOPIC_ARN: {
+        'Ref': 'SNSTopic'
       }
     },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: {
+          'Ref': 'SNSTopic'
+        }
+      }
+    ]
   },
   resources: {
     Resources: {
@@ -39,6 +49,22 @@ const serverlessConfiguration: Serverless = {
         Type: 'AWS::SQS::Queue',
         Properties: {
           QueueName: 'catalogItemsQueue'
+        }
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'createProductTopic'
+        }
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'eugenik10@gmail.com',
+          Protocol: 'email',
+          TopicArn: {
+            'Ref': 'SNSTopic'
+          }
         }
       }
     },

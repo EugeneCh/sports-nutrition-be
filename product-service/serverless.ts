@@ -38,28 +38,28 @@ const serverlessConfiguration: Serverless = {
       SQSQueue: {
         Type: 'AWS::SQS::Queue',
         Properties: {
-          QueueName: 'products-sqs-sns-queue'
+          QueueName: 'catalogItemsQueue'
         }
       }
     },
     Outputs: {
-      ProductsCatalogQueue: {
+      CatalogItemsQueue: {
         Value: {
           'Ref': 'SQSQueue'
         },
         Export: {
-          Name: 'ProductsCatalogQueue'
+          Name: 'CatalogItemsQueue'
         },
-        Description: 'URL to products catalog SQS'
+        Description: 'URL for catalog items SQS'
       },
-      ProductsCatalogQueueArn: {
+      CatalogItemsQueueArn: {
         Value: {
           'Fn::GetAtt': ['SQSQueue', 'Arn']
         },
         Export: {
-          Name: 'ProductsCatalogQueueArn'
+          Name: 'CatalogItemsQueueArn'
         },
-        Description: 'ARN for products catalog SQS'
+        Description: 'ARN for catalog items SQS'
       }
     }
   },

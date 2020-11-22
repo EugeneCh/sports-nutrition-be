@@ -34,7 +34,7 @@ const serverlessConfiguration: Serverless = {
       {
         Effect: 'Allow',
         Action: ['sqs:*'],
-        Resource: ['${cf:product-service-${self:provider.stage}.ProductsCatalogQueueArn}']
+        Resource: ['${cf:product-service-${self:provider.stage}.CatalogItemsQueueArn}']
       }
     ],
     apiGateway: {
@@ -43,7 +43,7 @@ const serverlessConfiguration: Serverless = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       PRODUCTS_CATALOG_QUEUE_URL: {
-        'Fn::ImportValue': 'ProductsCatalogQueue'
+        'Fn::ImportValue': 'CatalogItemsQueue'
       }
     }
   },

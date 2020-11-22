@@ -57,13 +57,29 @@ const serverlessConfiguration: Serverless = {
           TopicName: 'createProductTopic'
         }
       },
-      SNSSubscription: {
+      SNSSubscriptionImportSuccess: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
-          Endpoint: 'eugenik10@gmail.com',
+          Endpoint: '${env:SUCCESS_EMAIL}',
           Protocol: 'email',
           TopicArn: {
             'Ref': 'SNSTopic'
+          },
+          FilterPolicy: {
+            status: ['success']
+          }
+        }
+      },
+      SNSSubscriptionImportFail: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:FAIL_EMAIL}',
+          Protocol: 'email',
+          TopicArn: {
+            'Ref': 'SNSTopic'
+          },
+          FilterPolicy: {
+            status: ['fail']
           }
         }
       }

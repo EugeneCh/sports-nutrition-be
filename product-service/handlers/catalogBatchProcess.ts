@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 import { SQSEvent, SQSRecord } from 'aws-lambda';
-import {AWSError, Request, SNS, SQS} from 'aws-sdk';
+import { AWSError, Request, SNS, SQS } from 'aws-sdk';
 import { Client, QueryResult } from 'pg';
 import { Product } from '../models/Product';
 import { createDbClient } from '../helpers/db.helper';
@@ -18,7 +18,19 @@ export const catalogBatchProcess: (event: SQSEvent) => void = async (event: SQSE
 
     for (const product of products) {
         if (!isProductBodyValid(product)) {
-            console.log('Invalid product send error message');
+            await client.query('ROLLBACK');
+            const request: Request<SQS.Types.SendMessageResult, AWSError> = await sns.publish({
+                Subject: 'Broken catalog item. Failed to import',
+                Message: JSON.stringify(product),
+                MessageAttributes: {
+                    status: {
+                        DataType: 'String',
+                        StringValue: 'fail',
+                    }
+                },
+                TopicArn: process.env.SNS_TOPIC_ARN
+            });
+            request.send();
             continue;
         }
         const { title, count, description, price } = product;
@@ -33,12 +45,29 @@ export const catalogBatchProcess: (event: SQSEvent) => void = async (event: SQSE
             const request: Request<SQS.Types.SendMessageResult, AWSError> = await sns.publish({
                 Subject: `New catalog item ${title} created`,
                 Message: JSON.stringify(product),
+                MessageAttributes: {
+                    status: {
+                        DataType: 'String',
+                        StringValue: 'success',
+                    }
+                },
                 TopicArn: process.env.SNS_TOPIC_ARN
             });
             request.send();
         } catch (error) {
             await client.query('ROLLBACK');
-            console.log('Send error message', error);
+            const request: Request<SQS.Types.SendMessageResult, AWSError> = await sns.publish({
+                Subject: `Failed to create catalog item ${title}`,
+                Message: JSON.stringify(error),
+                MessageAttributes: {
+                    status: {
+                        DataType: 'String',
+                        StringValue: 'fail',
+                    }
+                },
+                TopicArn: process.env.SNS_TOPIC_ARN
+            });
+            request.send();
         }
     }
     await client.end();

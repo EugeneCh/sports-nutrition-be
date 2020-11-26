@@ -1,6 +1,6 @@
 import { Product } from '../models/Product';
 
-const products: Product[] = [
+export const products: Product[] = [
   {
     count: 4,
     description: "Short Product Description1",

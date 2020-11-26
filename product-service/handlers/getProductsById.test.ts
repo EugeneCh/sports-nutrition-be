@@ -3,7 +3,7 @@ import { productsMock } from '../mocks/productList';
 import { Product } from '../models/Product';
 import { getProductsById } from './getProductsById';
 
-describe('getProductsById', () => {
+xdescribe('getProductsById', () => {
     it('should return 404 status code when called with wrong id', async () => {
         const event: APIGatewayProxyEventBase<APIGatewayEventDefaultAuthorizerContext> = {
             pathParameters: {

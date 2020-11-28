@@ -62,6 +62,13 @@ const serverlessConfiguration: Serverless = {
                 }
               }
             },
+            authorizer: {
+              name: 'basicAuthorizer',
+              arn: '${cf:authorization-service-${self:provider.stage}.BasicAuthorizerLambdaFunctionQualifiedArn}',
+              resultTtlInSeconds: 0,
+              identitySource: 'method.request.header.Authorization',
+              type: 'token'
+            },
             cors: true
           }
         }

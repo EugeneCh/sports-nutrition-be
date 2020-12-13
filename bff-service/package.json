@@ -1,0 +1,19 @@
+{
+  "name": "bff-service",
+  "version": "1.0.0",
+  "description": "BFF proxy service for product and cart APIs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "eb-init": "eb init --platform node.js --region eu-west-1",
+    "eb-create": "eb create development --single --cname eugenech-bff-develop"
+  },
+  "author": "Eugene",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "node-cache": "^5.1.2"
+  }
+}
